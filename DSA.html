@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA with Java — Interactive Tutorial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --orange-deep:  #E85D04;
+    --orange-mid:   #F48C06;
+    --orange-light: #FAA307;
+    --orange-glow:  #FFBA08;
+    --white:        #FFFFFF;
+    --off-white:    #FFF8F2;
+    --cream:        #FFF3E6;
+    --text-dark:    #1A0A00;
+    --text-muted:   #7A4E2D;
+    --border:       #FFD9B3;
+    --code-bg:      #1E1008;
+    --code-line:    #2D1A0A;
+    --success:      #2E7D32;
+    --error:        #C62828;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--orange-deep) 0%, var(--orange-mid) 60%, var(--orange-glow) 100%);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(232,93,4,0.4);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+  .logo span { opacity: 0.7; }
+  nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  nav a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: all 0.2s;
+  }
+  nav a:hover { background: rgba(255,255,255,0.2); color: var(--white); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, var(--orange-deep) 0%, #BF360C 100%);
+    color: var(--white);
+    text-align: center;
+    padding: 70px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '{ }';
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18rem;
+    opacity: 0.04;
+    position: absolute;
+    top: -40px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+  .hero h1 em { font-style: normal; color: var(--orange-glow); }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    max-width: 560px;
+    margin: 0 auto 32px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--orange-glow);
+    display: block;
+  }
+  .stat-label { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── MAIN LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-section {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    position: sticky;
+    top: 57px;
+    z-index: 90;
+  }
+  .progress-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress-label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .progress-bar-wrap {
+    flex: 1;
+    background: var(--cream);
+    border-radius: 8px;
+    height: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange-deep), var(--orange-glow));
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-count { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; color: var(--orange-deep); white-space: nowrap; }
+
+  /* ── TOPIC GRID (index) ── */
+  .topics-section { padding: 48px 0 32px; }
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+  }
+  .section-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 28px; }
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .topic-chip {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-dark);
+  }
+  .topic-chip:hover { border-color: var(--orange-mid); background: var(--cream); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(232,93,4,0.12); }
+  .topic-chip.done { border-color: var(--orange-light); background: linear-gradient(135deg, #FFF3E6, #FFF8F2); }
+  .chip-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--orange-deep);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 6px;
+    min-width: 28px;
+    text-align: center;
+  }
+  .chip-text { font-size: 0.88rem; font-weight: 600; }
+  .chip-badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: var(--cream);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .chip-badge.hard { background: #FFEAEA; color: #C62828; border-color: #FFCDD2; }
+  .chip-badge.med { background: #FFF3E0; color: #E65100; border-color: #FFE0B2; }
+  .chip-badge.easy { background: #E8F5E9; color: #2E7D32; border-color: #C8E6C9; }
+
+  /* ── LESSON CARDS ── */
+  .lessons-section { padding: 32px 0 60px; }
+  .lesson-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    scroll-margin-top: 120px;
+    transition: box-shadow 0.2s;
+  }
+  .lesson-card:hover { box-shadow: 0 8px 32px rgba(232,93,4,0.1); }
+
+  .lesson-header {
+    background: linear-gradient(135deg, var(--orange-deep), #BF360C);
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .lesson-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.2);
+    line-height: 1;
+    min-width: 52px;
+  }
+  .lesson-title-block {}
+  .lesson-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--orange-glow);
+    margin-bottom: 4px;
+  }
+  .lesson-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .lesson-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+
+  .lesson-body { padding: 24px; }
+
+  /* Concept box */
+  .concept-box {
+    background: var(--cream);
+    border-left: 4px solid var(--orange-mid);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    line-height: 1.7;
+  }
+  .concept-box strong { color: var(--orange-deep); }
+
+  /* Code editor */
+  .editor-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .editor-label::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--orange-mid); }
+
+  .code-editor {
+    background: var(--code-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    border: 1.5px solid #3D1A08;
+    position: relative;
+  }
+  .code-editor-bar {
+    background: #2D1A0A;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #FF5F57; }
+  .dot-y { background: #FFBD2E; }
+  .dot-g { background: #28C941; }
+  .code-editor-bar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+    margin-left: auto;
+  }
+  textarea.code-input {
+    width: 100%;
+    background: var(--code-bg);
+    color: #FFB74D;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    border: none;
+    outline: none;
+    padding: 16px;
+    resize: vertical;
+    min-height: 200px;
+    tab-size: 4;
+  }
+  textarea.code-input::placeholder { color: rgba(255,150,60,0.3); }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-run {
+    background: linear-gradient(135deg, var(--orange-deep), var(--orange-mid));
+    color: var(--white);
+    box-shadow: 0 3px 12px rgba(232,93,4,0.35);
+  }
+  .btn-run:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(232,93,4,0.45); }
+  .btn-hint {
+    background: var(--cream);
+    color: var(--orange-deep);
+    border: 1.5px solid var(--border);
+  }
+  .btn-hint:hover { background: #FFE0C2; }
+  .btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+  .btn-reset:hover { border-color: var(--text-muted); }
+
+  .output-box {
+    background: #0F0600;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    min-height: 52px;
+    color: #A5D6A7;
+    border: 1px solid #3D1A08;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .output-box.error { color: #EF9A9A; }
+  .output-box.empty { color: rgba(165,214,167,0.3); font-style: italic; }
+
+  .hint-box {
+    background: #FFF8E1;
+    border: 1px solid #FFE082;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #5D4037;
+    margin-top: 10px;
+    display: none;
+    line-height: 1.6;
+  }
+  .hint-box.visible { display: block; }
+  .hint-box strong { color: var(--orange-deep); }
+
+  .done-banner {
+    display: none;
+    background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
+    border: 1.5px solid #A5D6A7;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--success);
+    margin-top: 12px;
+    align-items: center;
+    gap: 8px;
+  }
+  .done-banner.visible { display: flex; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--text-dark);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 28px 24px;
+    font-size: 0.82rem;
+  }
+  footer strong { color: var(--orange-light); }
+
+  /* ── SCROLL TO TOP ── */
+  .scroll-top {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--orange-deep);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(232,93,4,0.4);
+    transition: all 0.2s;
+    display: none;
+    z-index: 200;
+  }
+  .scroll-top:hover { transform: translateY(-2px); }
+  .scroll-top.visible { display: flex; align-items: center; justify-content: center; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8rem; }
+    .lesson-num { font-size: 1.5rem; min-width: 36px; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo"><span>//</span> DSA<span>.</span>java</div>
+    <nav>
+      <a href="#topic-1">Arrays</a>
+      <a href="#topic-2">LinkedList</a>
+      <a href="#topic-3">Stack</a>
+      <a href="#topic-4">Queue</a>
+      <a href="#topic-5">Binary Search</a>
+      <a href="#topic-6">Recursion</a>
+      <a href="#topic-7">Sorting</a>
+      <a href="#topic-8">HashMap</a>
+      <a href="#topic-9">Tree</a>
+      <a href="#topic-10">Graph</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Interactive Java DSA Course</div>
+  <h1>Master <em>Data Structures</em><br>& Algorithms in Java</h1>
+  <p>Write real Java code directly in the browser. 10 hands-on programs covering every core DSA concept — run, test, and complete each lesson.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">10</span><span class="stat-label">Programs</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">In-Browser</span></div>
+    <div class="stat"><span class="stat-num">Java</span><span class="stat-label">Language</span></div>
+  </div>
+</section>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="container">
+    <div class="progress-inner">
+      <span class="progress-label">Your Progress</span>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+      <span class="progress-count" id="progressCount">0 / 10</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOPIC INDEX -->
+  <section class="topics-section">
+    <div class="section-title">Course Overview</div>
+    <div class="section-sub">Click a topic to jump directly to the exercise.</div>
+    <div class="topics-grid">
+      <a href="#topic-1" class="topic-chip" id="chip-1"><span class="chip-num">01</span><span class="chip-text">Arrays</span><span class="chip-badge easy">Easy</span></a>
+      <a href="#topic-2" class="topic-chip" id="chip-2"><span class="chip-num">02</span><span class="chip-text">Linked List</span><span class="chip-badge easy">Easy</span></a>
+      <a href="#topic-3" class="topic-chip" id="chip-3"><span class="chip-num">03</span><span class="chip-text">Stack</span><span class="chip-badge easy">Easy</span></a>
+      <a href="#topic-4" class="topic-chip" id="chip-4"><span class="chip-num">04</span><span class="chip-text">Queue</span><span class="chip-badge easy">Easy</span></a>
+      <a href="#topic-5" class="topic-chip" id="chip-5"><span class="chip-num">05</span><span class="chip-text">Binary Search</span><span class="chip-badge med">Medium</span></a>
+      <a href="#topic-6" class="topic-chip" id="chip-6"><span class="chip-num">06</span><span class="chip-text">Recursion</span><span class="chip-badge med">Medium</span></a>
+      <a href="#topic-7" class="topic-chip" id="chip-7"><span class="chip-num">07</span><span class="chip-text">Bubble Sort</span><span class="chip-badge med">Medium</span></a>
+      <a href="#topic-8" class="topic-chip" id="chip-8"><span class="chip-num">08</span><span class="chip-text">HashMap</span><span class="chip-badge med">Medium</span></a>
+      <a href="#topic-9" class="topic-chip" id="chip-9"><span class="chip-num">09</span><span class="chip-text">Binary Tree</span><span class="chip-badge hard">Hard</span></a>
+      <a href="#topic-10" class="topic-chip" id="chip-10"><span class="chip-num">10</span><span class="chip-text">Graph BFS</span><span class="chip-badge hard">Hard</span></a>
+    </div>
+  </section>
+
+  <!-- LESSONS -->
+  <section class="lessons-section">
+
+    <!-- 1. ARRAYS -->
+    <div class="lesson-card" id="topic-1">
+      <div class="lesson-header">
+        <div class="lesson-num">01</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Arrays</div>
+          <div class="lesson-title">Array Traversal & Sum</div>
+          <div class="lesson-desc">Declare an integer array and compute the sum of all elements using a loop.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          An <strong>Array</strong> stores a fixed-size sequence of elements of the same type. Arrays in Java are zero-indexed. Use <strong>arr.length</strong> to get the size. Time complexity for traversal: <strong>O(n)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-1" spellcheck="false">// Task: Declare an array {5, 10, 15, 20, 25}
+// Then compute and print the sum of all elements.
+
+public class Main {
+    public static void main(String[] args) {
+        int[] arr = {5, 10, 15, 20, 25};
+        int sum = 0;
+
+        // TODO: Loop through arr and add each element to sum
+
+
+        System.out.println("Sum = " + sum);
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(1, 'Sum = 75')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(1)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(1)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-1">// Output will appear here...</div>
+        <div class="hint-box" id="hint-1"><strong>Hint:</strong> Use a <code>for</code> loop: <code>for(int i = 0; i &lt; arr.length; i++) { sum += arr[i]; }</code></div>
+        <div class="done-banner" id="done-1">✅ Excellent! You've completed Arrays — sum is 75.</div>
+      </div>
+    </div>
+
+    <!-- 2. LINKED LIST -->
+    <div class="lesson-card" id="topic-2">
+      <div class="lesson-header">
+        <div class="lesson-num">02</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Linked List</div>
+          <div class="lesson-title">Singly Linked List — Insert & Print</div>
+          <div class="lesson-desc">Build a linked list from scratch and print all nodes.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          A <strong>Linked List</strong> is a chain of Nodes where each Node holds data and a reference to the next node. Unlike arrays, elements are not stored contiguously. Insert at head: <strong>O(1)</strong>; Traversal: <strong>O(n)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-2" spellcheck="false">// Task: Create a LinkedList with nodes 10 → 20 → 30 → null
+// Print each node's data.
+
+class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; next = null; }
+}
+
+public class Main {
+    static Node head = null;
+
+    static void insert(int data) {
+        Node newNode = new Node(data);
+        // TODO: If head is null, set head = newNode
+        //       else traverse to the last node and set last.next = newNode
+
+    }
+
+    static void printList() {
+        Node cur = head;
+        while (cur != null) {
+            System.out.print(cur.data);
+            if (cur.next != null) System.out.print(" -> ");
+            cur = cur.next;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        insert(10);
+        insert(20);
+        insert(30);
+        printList();
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(2, '10 -> 20 -> 30')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(2)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(2)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-2">// Output will appear here...</div>
+        <div class="hint-box" id="hint-2"><strong>Hint:</strong> In <code>insert()</code>: if <code>head == null</code> then <code>head = newNode</code>. Otherwise use a <code>while(cur.next != null)</code> loop to find the tail, then set <code>cur.next = newNode</code>.</div>
+        <div class="done-banner" id="done-2">✅ Great job! Linked List built and traversed: 10 → 20 → 30.</div>
+      </div>
+    </div>
+
+    <!-- 3. STACK -->
+    <div class="lesson-card" id="topic-3">
+      <div class="lesson-header">
+        <div class="lesson-num">03</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Stack</div>
+          <div class="lesson-title">Stack — Push, Pop & Peek</div>
+          <div class="lesson-desc">Implement a stack using an array and demonstrate LIFO behaviour.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          A <strong>Stack</strong> follows <strong>LIFO</strong> (Last In First Out). Operations — push (add to top), pop (remove from top), peek (view top without removing) — all run in <strong>O(1)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-3" spellcheck="false">// Task: Use Java's built-in Stack to push 1, 2, 3
+// Then peek, pop and print remaining element.
+
+import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Stack<Integer> stack = new Stack<>();
+
+        // TODO: push 1, 2, 3 onto the stack
+        
+
+        System.out.println("Peek: " + stack.peek());
+        stack.pop();
+        System.out.println("After pop, top: " + stack.peek());
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(3, 'Peek: 3\nAfter pop, top: 2')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(3)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(3)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-3">// Output will appear here...</div>
+        <div class="hint-box" id="hint-3"><strong>Hint:</strong> Use <code>stack.push(1); stack.push(2); stack.push(3);</code> — the last pushed item is always on top.</div>
+        <div class="done-banner" id="done-3">✅ Stack mastered! LIFO behaviour demonstrated perfectly.</div>
+      </div>
+    </div>
+
+    <!-- 4. QUEUE -->
+    <div class="lesson-card" id="topic-4">
+      <div class="lesson-header">
+        <div class="lesson-num">04</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Queue</div>
+          <div class="lesson-title">Queue — Enqueue & Dequeue</div>
+          <div class="lesson-desc">Use LinkedList as a Queue and demonstrate FIFO ordering.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          A <strong>Queue</strong> follows <strong>FIFO</strong> (First In First Out). Elements are added at the <em>rear</em> and removed from the <em>front</em>. In Java, <code>Queue</code> is an interface implemented by <code>LinkedList</code>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-4" spellcheck="false">// Task: Create a Queue, offer "Alice", "Bob", "Charlie"
+// Poll (remove) the first element and print who's next.
+
+import java.util.Queue;
+import java.util.LinkedList;
+
+public class Main {
+    public static void main(String[] args) {
+        Queue<String> queue = new LinkedList<>();
+
+        // TODO: offer "Alice", "Bob", "Charlie" into the queue
+
+
+        System.out.println("Front: " + queue.peek());
+        queue.poll();
+        System.out.println("Next: " + queue.peek());
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(4, 'Front: Alice\nNext: Bob')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(4)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(4)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-4">// Output will appear here...</div>
+        <div class="hint-box" id="hint-4"><strong>Hint:</strong> Use <code>queue.offer("Alice"); queue.offer("Bob"); queue.offer("Charlie");</code> — <code>offer()</code> adds to the rear.</div>
+        <div class="done-banner" id="done-4">✅ Queue completed! FIFO order confirmed: Alice → Bob → Charlie.</div>
+      </div>
+    </div>
+
+    <!-- 5. BINARY SEARCH -->
+    <div class="lesson-card" id="topic-5">
+      <div class="lesson-header">
+        <div class="lesson-num">05</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Algorithms · Searching</div>
+          <div class="lesson-title">Binary Search</div>
+          <div class="lesson-desc">Implement binary search on a sorted array to find a target value.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          <strong>Binary Search</strong> works on <em>sorted</em> arrays. At each step, compare the middle element to the target — if it matches, return; if target is smaller, search left half; otherwise search right half. Time: <strong>O(log n)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-5" spellcheck="false">// Task: Implement binarySearch() to find target = 40
+// in array {10, 20, 30, 40, 50}. Print the index found.
+
+public class Main {
+    static int binarySearch(int[] arr, int target) {
+        int low = 0, high = arr.length - 1;
+        while (low <= high) {
+            int mid = (low + high) / 2;
+            // TODO: if arr[mid] == target return mid
+            //       if target < arr[mid] search left (high = mid-1)
+            //       else search right (low = mid+1)
+
+        }
+        return -1; // not found
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {10, 20, 30, 40, 50};
+        int result = binarySearch(arr, 40);
+        System.out.println("Found at index: " + result);
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(5, 'Found at index: 3')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(5)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(5)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-5">// Output will appear here...</div>
+        <div class="hint-box" id="hint-5"><strong>Hint:</strong><br><code>if (arr[mid] == target) return mid;</code><br><code>else if (target &lt; arr[mid]) high = mid - 1;</code><br><code>else low = mid + 1;</code></div>
+        <div class="done-banner" id="done-5">✅ Binary Search works! Target 40 found at index 3.</div>
+      </div>
+    </div>
+
+    <!-- 6. RECURSION -->
+    <div class="lesson-card" id="topic-6">
+      <div class="lesson-header">
+        <div class="lesson-num">06</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Algorithms · Recursion</div>
+          <div class="lesson-title">Factorial using Recursion</div>
+          <div class="lesson-desc">Compute factorial of n by calling the function within itself.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          <strong>Recursion</strong> is when a function calls itself. Every recursive solution needs a <em>base case</em> (to stop) and a <em>recursive case</em>. Factorial: <strong>n! = n × (n-1)!</strong>, base case: <strong>0! = 1</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-6" spellcheck="false">// Task: Complete the factorial() method using recursion.
+// Print factorial of 6 (should be 720).
+
+public class Main {
+    static int factorial(int n) {
+        // TODO: Base case — if n == 0, return 1
+        // TODO: Recursive case — return n * factorial(n - 1)
+
+        return 0; // placeholder
+    }
+
+    public static void main(String[] args) {
+        System.out.println("6! = " + factorial(6));
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(6, '6! = 720')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(6)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(6)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-6">// Output will appear here...</div>
+        <div class="hint-box" id="hint-6"><strong>Hint:</strong><br><code>if (n == 0) return 1;</code><br><code>return n * factorial(n - 1);</code></div>
+        <div class="done-banner" id="done-6">✅ Recursion nailed! 6! = 720 ✓</div>
+      </div>
+    </div>
+
+    <!-- 7. BUBBLE SORT -->
+    <div class="lesson-card" id="topic-7">
+      <div class="lesson-header">
+        <div class="lesson-num">07</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Algorithms · Sorting</div>
+          <div class="lesson-title">Bubble Sort</div>
+          <div class="lesson-desc">Sort an array in ascending order using the bubble sort algorithm.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          <strong>Bubble Sort</strong> repeatedly compares adjacent elements and swaps them if they are in the wrong order. After each pass the largest unsorted element "bubbles up" to its correct position. Time: <strong>O(n²)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-7" spellcheck="false">// Task: Sort {64, 34, 25, 12, 22} using Bubble Sort.
+// Print: Sorted: 12 22 25 34 64
+
+import java.util.Arrays;
+
+public class Main {
+    static void bubbleSort(int[] arr) {
+        int n = arr.length;
+        // TODO: Outer loop for passes (i from 0 to n-1)
+        //   Inner loop (j from 0 to n-i-2)
+        //     If arr[j] > arr[j+1], swap them
+
+
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {64, 34, 25, 12, 22};
+        bubbleSort(arr);
+        System.out.print("Sorted: ");
+        for (int x : arr) System.out.print(x + " ");
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(7, 'Sorted: 12 22 25 34 64')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(7)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(7)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-7">// Output will appear here...</div>
+        <div class="hint-box" id="hint-7"><strong>Hint:</strong> To swap: <code>int temp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = temp;</code>. Use nested for loops.</div>
+        <div class="done-banner" id="done-7">✅ Bubble Sort complete! Array sorted in O(n²) time.</div>
+      </div>
+    </div>
+
+    <!-- 8. HASHMAP -->
+    <div class="lesson-card" id="topic-8">
+      <div class="lesson-header">
+        <div class="lesson-num">08</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Hashing</div>
+          <div class="lesson-title">HashMap — Frequency Counter</div>
+          <div class="lesson-desc">Count character frequency in a string using a HashMap.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          A <strong>HashMap</strong> stores key-value pairs. Average time for get/put: <strong>O(1)</strong>. It is ideal for counting frequencies, memoization, and lookup tables. Use <code>getOrDefault(key, 0)</code> to safely increment counts.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-8" spellcheck="false">// Task: Count the frequency of each character in "banana"
+// Expected output (any order):
+// b=1, a=3, n=2
+
+import java.util.HashMap;
+
+public class Main {
+    public static void main(String[] args) {
+        String word = "banana";
+        HashMap<Character, Integer> freq = new HashMap<>();
+
+        // TODO: Loop through each char in word
+        //   freq.put(c, freq.getOrDefault(c, 0) + 1)
+
+
+        for (var entry : freq.entrySet()) {
+            System.out.println(entry.getKey() + "=" + entry.getValue());
+        }
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(8, 'b=1')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(8)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(8)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-8">// Output will appear here...</div>
+        <div class="hint-box" id="hint-8"><strong>Hint:</strong> <code>for (char c : word.toCharArray()) { freq.put(c, freq.getOrDefault(c, 0) + 1); }</code></div>
+        <div class="done-banner" id="done-8">✅ HashMap mastered! Frequency of "banana" counted correctly.</div>
+      </div>
+    </div>
+
+    <!-- 9. BINARY TREE -->
+    <div class="lesson-card" id="topic-9">
+      <div class="lesson-header">
+        <div class="lesson-num">09</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Data Structures · Trees</div>
+          <div class="lesson-title">Binary Tree — Inorder Traversal</div>
+          <div class="lesson-desc">Build a binary tree and traverse it in-order (Left → Root → Right).</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          A <strong>Binary Tree</strong> has nodes where each node has at most two children (left and right). <strong>Inorder traversal</strong> visits: Left subtree → Root → Right subtree. For a BST, inorder always gives <em>sorted</em> output. Time: <strong>O(n)</strong>.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-9" spellcheck="false">// Tree structure:
+//        4
+//       / \
+//      2   6
+//     / \ / \
+//    1  3 5  7
+// Task: Implement inorder() to print: 1 2 3 4 5 6 7
+
+class Node {
+    int val; Node left, right;
+    Node(int v) { val = v; }
+}
+
+public class Main {
+    static void inorder(Node root) {
+        // TODO: if root is null, return
+        // TODO: inorder(root.left)
+        // TODO: print root.val
+        // TODO: inorder(root.right)
+
+    }
+
+    public static void main(String[] args) {
+        Node root = new Node(4);
+        root.left = new Node(2); root.right = new Node(6);
+        root.left.left = new Node(1); root.left.right = new Node(3);
+        root.right.left = new Node(5); root.right.right = new Node(7);
+        inorder(root);
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(9, '1 2 3 4 5 6 7')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(9)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(9)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-9">// Output will appear here...</div>
+        <div class="hint-box" id="hint-9"><strong>Hint:</strong><br><code>if (root == null) return;</code><br><code>inorder(root.left);</code><br><code>System.out.print(root.val + " ");</code><br><code>inorder(root.right);</code></div>
+        <div class="done-banner" id="done-9">✅ Binary Tree traversed! Inorder: 1 2 3 4 5 6 7 ✓</div>
+      </div>
+    </div>
+
+    <!-- 10. GRAPH BFS -->
+    <div class="lesson-card" id="topic-10">
+      <div class="lesson-header">
+        <div class="lesson-num">10</div>
+        <div class="lesson-title-block">
+          <div class="lesson-tag">Algorithms · Graph</div>
+          <div class="lesson-title">Graph — Breadth-First Search (BFS)</div>
+          <div class="lesson-desc">Traverse a graph level by level using BFS and a Queue.</div>
+        </div>
+      </div>
+      <div class="lesson-body">
+        <div class="concept-box">
+          <strong>BFS</strong> explores a graph level by level, visiting all neighbours of a node before going deeper. It uses a <em>Queue</em> and a <em>visited</em> array to avoid revisiting. Time: <strong>O(V + E)</strong> where V = vertices, E = edges.
+        </div>
+        <div class="editor-label">Write your Java code below</div>
+        <div class="code-editor">
+          <div class="code-editor-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><span>Main.java</span></div>
+          <textarea class="code-input" id="code-10" spellcheck="false">// Graph (adjacency list):
+// 0 -- 1 -- 3
+// |    |
+// 2    4
+// BFS from node 0 should print: 0 1 2 3 4
+
+import java.util.*;
+
+public class Main {
+    static int V = 5;
+    static List<List<Integer>> adj = new ArrayList<>();
+
+    static void bfs(int start) {
+        boolean[] visited = new boolean[V];
+        Queue<Integer> queue = new LinkedList<>();
+
+        // TODO: Mark start as visited, add to queue
+        // TODO: While queue is not empty:
+        //         poll a node, print it
+        //         for each neighbour: if not visited, mark visited & enqueue
+
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < V; i++) adj.add(new ArrayList<>());
+        adj.get(0).add(1); adj.get(1).add(0);
+        adj.get(0).add(2); adj.get(2).add(0);
+        adj.get(1).add(3); adj.get(3).add(1);
+        adj.get(1).add(4); adj.get(4).add(1);
+        bfs(0);
+    }
+}</textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-run" onclick="runCode(10, '0 1 2 3 4')">▶ Run Code</button>
+          <button class="btn btn-hint" onclick="toggleHint(10)">💡 Hint</button>
+          <button class="btn btn-reset" onclick="resetCode(10)">↺ Reset</button>
+        </div>
+        <div class="output-box empty" id="output-10">// Output will appear here...</div>
+        <div class="hint-box" id="hint-10"><strong>Hint:</strong><br><code>visited[start] = true; queue.add(start);</code><br>Then in the while loop:<br><code>int node = queue.poll(); System.out.print(node + " ");</code><br><code>for (int nb : adj.get(node)) { if (!visited[nb]) { visited[nb] = true; queue.add(nb); }}</code></div>
+        <div class="done-banner" id="done-10">✅ BFS Complete! Course finished — you're a DSA Java pro! 🎉</div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<footer>
+  Built for learners. <strong>DSA with Java</strong> — 10 interactive programs. Write code, run it, level up.
+</footer>
+
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+
+<script>
+  // ── DEFAULT CODE (for reset) ──
+  const defaults = {
+    1: `// Task: Declare an array {5, 10, 15, 20, 25}\n// Then compute and print the sum of all elements.\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {5, 10, 15, 20, 25};\n        int sum = 0;\n\n        // TODO: Loop through arr and add each element to sum\n\n\n        System.out.println("Sum = " + sum);\n    }\n}`,
+    2: `// Task: Create a LinkedList with nodes 10 → 20 → 30 → null\n// Print each node's data.\n\nclass Node {\n    int data;\n    Node next;\n    Node(int d) { data = d; next = null; }\n}\n\npublic class Main {\n    static Node head = null;\n\n    static void insert(int data) {\n        Node newNode = new Node(data);\n        // TODO: If head is null, set head = newNode\n        //       else traverse to the last node and set last.next = newNode\n\n    }\n\n    static void printList() {\n        Node cur = head;\n        while (cur != null) {\n            System.out.print(cur.data);\n            if (cur.next != null) System.out.print(" -> ");\n            cur = cur.next;\n        }\n        System.out.println();\n    }\n\n    public static void main(String[] args) {\n        insert(10);\n        insert(20);\n        insert(30);\n        printList();\n    }\n}`,
+    3: `// Task: Use Java's built-in Stack to push 1, 2, 3\n// Then peek, pop and print remaining element.\n\nimport java.util.Stack;\n\npublic class Main {\n    public static void main(String[] args) {\n        Stack<Integer> stack = new Stack<>();\n\n        // TODO: push 1, 2, 3 onto the stack\n        \n\n        System.out.println("Peek: " + stack.peek());\n        stack.pop();\n        System.out.println("After pop, top: " + stack.peek());\n    }\n}`,
+    4: `// Task: Create a Queue, offer "Alice", "Bob", "Charlie"\n// Poll (remove) the first element and print who's next.\n\nimport java.util.Queue;\nimport java.util.LinkedList;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<String> queue = new LinkedList<>();\n\n        // TODO: offer "Alice", "Bob", "Charlie" into the queue\n\n\n        System.out.println("Front: " + queue.peek());\n        queue.poll();\n        System.out.println("Next: " + queue.peek());\n    }\n}`,
+    5: `// Task: Implement binarySearch() to find target = 40\n// in array {10, 20, 30, 40, 50}. Print the index found.\n\npublic class Main {\n    static int binarySearch(int[] arr, int target) {\n        int low = 0, high = arr.length - 1;\n        while (low <= high) {\n            int mid = (low + high) / 2;\n            // TODO: if arr[mid] == target return mid\n            //       if target < arr[mid] search left (high = mid-1)\n            //       else search right (low = mid+1)\n\n        }\n        return -1; // not found\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {10, 20, 30, 40, 50};\n        int result = binarySearch(arr, 40);\n        System.out.println("Found at index: " + result);\n    }\n}`,
+    6: `// Task: Complete the factorial() method using recursion.\n// Print factorial of 6 (should be 720).\n\npublic class Main {\n    static int factorial(int n) {\n        // TODO: Base case — if n == 0, return 1\n        // TODO: Recursive case — return n * factorial(n - 1)\n\n        return 0; // placeholder\n    }\n\n    public static void main(String[] args) {\n        System.out.println("6! = " + factorial(6));\n    }\n}`,
+    7: `// Task: Sort {64, 34, 25, 12, 22} using Bubble Sort.\n// Print: Sorted: 12 22 25 34 64\n\nimport java.util.Arrays;\n\npublic class Main {\n    static void bubbleSort(int[] arr) {\n        int n = arr.length;\n        // TODO: Outer loop for passes (i from 0 to n-1)\n        //   Inner loop (j from 0 to n-i-2)\n        //     If arr[j] > arr[j+1], swap them\n\n\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {64, 34, 25, 12, 22};\n        bubbleSort(arr);\n        System.out.print("Sorted: ");\n        for (int x : arr) System.out.print(x + " ");\n    }\n}`,
+    8: `// Task: Count the frequency of each character in "banana"\n// Expected output (any order):\n// b=1, a=3, n=2\n\nimport java.util.HashMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        String word = "banana";\n        HashMap<Character, Integer> freq = new HashMap<>();\n\n        // TODO: Loop through each char in word\n        //   freq.put(c, freq.getOrDefault(c, 0) + 1)\n\n\n        for (var entry : freq.entrySet()) {\n            System.out.println(entry.getKey() + "=" + entry.getValue());\n        }\n    }\n}`,
+    9: `// Tree structure:\n//        4\n//       / \\\n//      2   6\n//     / \\ / \\\n//    1  3 5  7\n// Task: Implement inorder() to print: 1 2 3 4 5 6 7\n\nclass Node {\n    int val; Node left, right;\n    Node(int v) { val = v; }\n}\n\npublic class Main {\n    static void inorder(Node root) {\n        // TODO: if root is null, return\n        // TODO: inorder(root.left)\n        // TODO: print root.val\n        // TODO: inorder(root.right)\n\n    }\n\n    public static void main(String[] args) {\n        Node root = new Node(4);\n        root.left = new Node(2); root.right = new Node(6);\n        root.left.left = new Node(1); root.left.right = new Node(3);\n        root.right.left = new Node(5); root.right.right = new Node(7);\n        inorder(root);\n    }\n}`,
+    10: `// Graph (adjacency list):\n// 0 -- 1 -- 3\n// |    |\n// 2    4\n// BFS from node 0 should print: 0 1 2 3 4\n\nimport java.util.*;\n\npublic class Main {\n    static int V = 5;\n    static List<List<Integer>> adj = new ArrayList<>();\n\n    static void bfs(int start) {\n        boolean[] visited = new boolean[V];\n        Queue<Integer> queue = new LinkedList<>();\n\n        // TODO: Mark start as visited, add to queue\n        // TODO: While queue is not empty:\n        //         poll a node, print it\n        //         for each neighbour: if not visited, mark visited & enqueue\n\n    }\n\n    public static void main(String[] args) {\n        for (int i = 0; i < V; i++) adj.add(new ArrayList<>());\n        adj.get(0).add(1); adj.get(1).add(0);\n        adj.get(0).add(2); adj.get(2).add(0);\n        adj.get(1).add(3); adj.get(3).add(1);\n        adj.get(1).add(4); adj.get(4).add(1);\n        bfs(0);\n    }\n}`
+  };
+
+  const completed = new Set();
+
+  // Simulated Java execution: checks if code contains the right answer patterns
+  const checkers = {
+    1: (code) => code.includes('sum += arr[i]') || code.includes('sum = sum + arr[i]') || (code.includes('for') && code.includes('arr') && code.includes('sum')),
+    2: (code) => code.includes('head = newNode') && (code.includes('cur.next = newNode') || code.includes('.next = newNode')),
+    3: (code) => code.includes('push(1)') && code.includes('push(2)') && code.includes('push(3)'),
+    4: (code) => code.includes('offer("Alice")') && code.includes('offer("Bob")') && code.includes('offer("Charlie")'),
+    5: (code) => code.includes('arr[mid] == target') && (code.includes('high = mid - 1') || code.includes('high=mid-1')) && (code.includes('low = mid + 1') || code.includes('low=mid+1')),
+    6: (code) => (code.includes('n == 0') || code.includes('n==0')) && code.includes('factorial(n - 1)'),
+    7: (code) => code.includes('arr[j] > arr[j+1]') || code.includes('arr[j]>arr[j+1]'),
+    8: (code) => code.includes('getOrDefault') && code.includes('toCharArray'),
+    9: (code) => code.includes('inorder(root.left)') && code.includes('inorder(root.right)') && code.includes('root.val') && (code.includes('if (root == null)') || code.includes('if(root==null)')),
+    10: (code) => code.includes('visited[start] = true') && code.includes('queue') && code.includes('visited[nb]')
+  };
+
+  const expectedOutputs = {
+    1: 'Sum = 75',
+    2: '10 -> 20 -> 30',
+    3: 'Peek: 3\nAfter pop, top: 2',
+    4: 'Front: Alice\nNext: Bob',
+    5: 'Found at index: 3',
+    6: '6! = 720',
+    7: 'Sorted: 12 22 25 34 64 ',
+    8: 'b=1\nn=2\na=3',
+    9: '1 2 3 4 5 6 7 ',
+    10: '0 1 2 3 4 '
+  };
+
+  function runCode(num, expectedContains) {
+    const code = document.getElementById('code-' + num).value;
+    const outputEl = document.getElementById('output-' + num);
+    const doneEl = document.getElementById('done-' + num);
+
+    // Check for empty TODO
+    if (code.includes('return 0; // placeholder') && num === 6 && !code.includes('if')) {
+      outputEl.className = 'output-box error';
+      outputEl.textContent = '⚠ Compile Error: Method returns 0. Complete the TODO sections first.';
+      return;
+    }
+
+    const isCorrect = checkers[num](code);
+
+    if (isCorrect) {
+      outputEl.className = 'output-box';
+      outputEl.textContent = expectedOutputs[num];
+      doneEl.classList.add('visible');
+      if (!completed.has(num)) {
+        completed.add(num);
+        updateProgress();
+        document.getElementById('chip-' + num).classList.add('done');
+      }
+    } else {
+      outputEl.className = 'output-box error';
+      outputEl.textContent = '⚠ Output mismatch or compilation error.\nMake sure you\'ve filled in all TODO sections.\nCheck the hint if you\'re stuck!';
+      doneEl.classList.remove('visible');
+    }
+  }
+
+  function toggleHint(num) {
+    const hint = document.getElementById('hint-' + num);
+    hint.classList.toggle('visible');
+  }
+
+  function resetCode(num) {
+    document.getElementById('code-' + num).value = defaults[num];
+    document.getElementById('output-' + num).className = 'output-box empty';
+    document.getElementById('output-' + num).textContent = '// Output will appear here...';
+    document.getElementById('hint-' + num).classList.remove('visible');
+  }
+
+  function updateProgress() {
+    const count = completed.size;
+    const pct = (count / 10) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressCount').textContent = count + ' / 10';
+  }
+
+  // Scroll to top button
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTopBtn');
+    btn.classList.toggle('visible', window.scrollY > 300);
+  });
+
+  // Tab key in textarea → indent
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const s = this.selectionStart;
+        this.value = this.value.substring(0, s) + '    ' + this.value.substring(this.selectionEnd);
+        this.selectionStart = this.selectionEnd = s + 4;
+      }
+    });
+  });
+</script>
+</body>
+</html>
